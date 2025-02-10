@@ -1,57 +1,90 @@
-
 #include <vector>
-#include <stdio>
-#include <cmath>
-const double soft= 1e-10;
-const double G=6.67 * pow(10,-11)
-class Body{
- public:
-  double x;
-  double y;
-  double z;
-  double fx;
-  double fy;
-  double fz;
-  double vx;
-  double vy;
-  double vz;
-  double mass;
-  void update(std::vector<Body> bodies,double dt);
-  Body(double x,double y,double z,double mass)
-    :x(x),y(y),z(z),mass(mass),vx(0),vy(0),vz(0),fx(0),fy(0),fz(0){} 
-};
-void Body::update(std::vector<Body> bodies, double dt){
-  for(const auto& other : bodies){
-    if(&other==this) continue;
+#include <iostream>
+#include <fstream>
+#include "Body.h"
+#include <time.h>
+std::vector<Body> parseTSV(const std::string& filename) {
+     std::vector<Body> bodies;
+     std::ifstream file(filename);
+     double mass,x,y,z,vx,vy,vz,fx,fy,fz;
+     char tab;
+     int n=0;
+     file>>n;
+    while (file >> mass >> x >> y >> z >> vx >> vy >> vz >> fx >> fy >> fz) {
+        Body body(x, y, z, mass);
+        body.vx = vx;
+        body.vy = vy;
+        body.vz = vz;
+        body.fx = fx;
+        body.fy = fy;
+        body.fz = fz;
+	bodies.push_back(body);
+	std::cout<<"Initial:"<<"Mass:"<<body.mass<<", X:"<<body.x<<", Y:"<<body.y<<", Z"<<body.z<<std::endl;
+     }
+    file.close();
+    return bodies;
+ }
+void output(std::string& filename ,std::vector<Body> bodies,int N){
+  std::ofstream outputFile(filename);
+  for(auto &body:bodies){
+    outputFile<<N<<"\t"<<body.mass<<"\t"<<body.x<<"\t"<<body.y<<"\t"<<body.z<<"\t"<<body.vx<<"\t"<<body.vy<<"\t"<<body.vz<<"\t"<<body.fx<<"\t"<<body.fy<<"\t"<<body.fz<<"\t";
+  }
+  outputFile<<std::endl;
+}
+    int main(int argc,char* argv[]){
+      std::string outputfile="output.tsv";
+      srand(time(0));
+      int N=std::stoul(argv[1]);
+      int steps=std::stoul(argv[2]);
+      double dt=std::stoul(argv[3]);
+      if(N==0){
+	int amt=10;
+	std::string filename =argv[4];
 
-this->fx=0;
-  this->fy=0;
-  this->fz=0;
+	std::vector<Body> bodies= parseTSV(filename);
+	
+      	for(int i=0;i<steps;i++){
+	  if(i%1000==0){output(outputfile,bodies,amt);}
+	  for(auto& body:bodies){
+	 
+	    body.update(bodies,dt);
+	    
+	  }
+	}
+      }
+      else{
+	std::vector<Body> bodies;
+	for(int j=0;j<N;++j){//create N bodies
+	  
+	  double mass=rand();
+	  double x=rand();
+	  double y=rand();
+	  double z=rand();
+	  double vx=rand();
+	  double vy=rand();
+	  double vz=rand();
+	  double fx=rand();
+	  double fy=rand();
+	  double fz=rand();
+	  Body body(x,y,z,mass);
+	  body.vx=vx;
+	  body.vy=vy;
+	  body.vz=vz;
+	  body.fx=fx;
+	  body.fy=fy;
+	  body.fz=fz;
+	  bodies.push_back(body);
+	}
+	for(int k=0;k<steps;k++){
+	  if(k%1000==0){output(outputfile,bodies,N);}
+	for(auto& body:bodies){
+	  
+	  body.update(bodies,dt);
+	  
+	}//body
+	}//step
+       
+      }//Else
 
-  double dx=other.x-x;
-  double dy=other.y-y;
-  double dz=other.z-z;
-
-  double r= pow((dx*dx)) + (dy*dy) +(dz*dz)+soft,0.5);
-  double r2=r*r;
-  
-  double f= G*((mass*other.mass)/r2);
-  this->fx= f(dx/r);
-  this->fy= f(dy/r);
-  this->fz= f(dz/r);
-
-  double ax= fx/this->mass;
-  double ay=fy/this->mass;
-  double az=fz/this->mass;
-
-  this->vx= this->vx+(ax*dt);
-   this->vy= this->vy+(ay*dt);
-  this->vz= this.vz + (az*dt);
-
-
-  this->x+=this->vx*dt;
-  this->y+=this->vy*dt;
-  this->z+=this->vz*dt;
-    }
-
-
+    return 0;
+}
