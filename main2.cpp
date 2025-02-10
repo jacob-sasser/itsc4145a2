@@ -25,12 +25,13 @@ std::vector<Body> parseTSV(const std::string& filename) {
     return bodies;
  }
 void output(std::string& filename ,std::vector<Body> bodies,int N){
-  std::ofstream outputFile(filename);
+  std::ofstream o(filename);
   for(auto &body:bodies){
-    outputFile<<N<<"\t"<<body.mass<<"\t"<<body.x<<"\t"<<body.y<<"\t"<<body.z<<"\t"<<body.vx<<"\t"<<body.vy<<"\t"<<body.vz<<"\t"<<body.fx<<"\t"<<body.fy<<"\t"<<body.fz<<"\t";
+o<<N<<"\t"<<body.mass<<"\t"<<body.x<<"\t"<<body.y<<"\t"<<body.z<<"\t"<<body.vx<<"\t"<<body.vy<<"\t"<<body.vz<<"\t"<<body.fx<<"\t"<<body.fy<<"\t"<<body.fz<<"\t";
   }
-  outputFile<<std::endl;
+  o<<"\n";
 }
+
     int main(int argc,char* argv[]){
       std::string outputfile=(argv[5]);
       srand(time(0));
