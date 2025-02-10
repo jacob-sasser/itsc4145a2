@@ -32,7 +32,7 @@ void output(std::string& filename ,std::vector<Body> bodies,int N){
   outputFile<<std::endl;
 }
     int main(int argc,char* argv[]){
-      std::string outputfile="output.tsv";
+      std::string outputfile=(argv[5]);
       srand(time(0));
       int N=std::stoul(argv[1]);
       int steps=std::stoul(argv[2]);
