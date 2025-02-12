@@ -24,16 +24,17 @@ std::vector<Body> parseTSV(const std::string& filename) {
     file.close();
     return bodies;
  }
-void output(std::string& filename ,std::vector<Body> bodies,int N){
-  std::ofstream o(filename);
+void output(std::ofstream& o ,std::vector<Body> bodies,int N){
+  o<<N;  
   for(auto &body:bodies){
-o<<N<<"\t"<<body.mass<<"\t"<<body.x<<"\t"<<body.y<<"\t"<<body.z<<"\t"<<body.vx<<"\t"<<body.vy<<"\t"<<body.vz<<"\t"<<body.fx<<"\t"<<body.fy<<"\t"<<body.fz<<"\t";
+o<<"\t"<<body.mass<<"\t"<<body.x<<"\t"<<body.y<<"\t"<<body.z<<"\t"<<body.vx<<"\t"<<body.vy<<"\t"<<body.vz<<"\t"<<body.fx<<"\t"<<body.fy<<"\t"<<body.fz<<"\t";
   }
   o<<"\n";
 }
 
     int main(int argc,char* argv[]){
       std::string outputfile=(argv[5]);
+      std::ofstream file(outputfile);
       srand(time(0));
       int N=std::stoul(argv[1]);
       int steps=std::stoul(argv[2]);
@@ -45,7 +46,7 @@ o<<N<<"\t"<<body.mass<<"\t"<<body.x<<"\t"<<body.y<<"\t"<<body.z<<"\t"<<body.vx<<
 	std::vector<Body> bodies= parseTSV(filename);
 	
       	for(int i=0;i<steps;i++){
-	  if(i%1000==0){output(outputfile,bodies,amt);}
+          if(i%1000==0){output(file,bodies,amt);}
 	  for(auto& body:bodies){
 	 
 	    body.update(bodies,dt);
@@ -77,7 +78,7 @@ o<<N<<"\t"<<body.mass<<"\t"<<body.x<<"\t"<<body.y<<"\t"<<body.z<<"\t"<<body.vx<<
 	  bodies.push_back(body);
 	}
 	for(int k=0;k<steps;k++){
-	  if(k%1000==0){output(outputfile,bodies,N);}
+	  if(k%1000==0){output(file,bodies,N);}
 	for(auto& body:bodies){
 	  
 	  body.update(bodies,dt);
